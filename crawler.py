@@ -4,7 +4,11 @@ import urlparse
 import urllib
 from bs4 import BeautifulSoup
 #from urlparse import urlparse
+def promena():
+    print 'smenif neso od pycharm da vidime dali ce funkcionira ;)'
 
+
+    
 def get_domain(url):
     try:
         parsed_uri = urlparse.urlparse(url)
