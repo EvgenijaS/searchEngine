@@ -5,7 +5,7 @@ import urllib
 from bs4 import BeautifulSoup
 #from urlparse import urlparse
 def promena():
-    print 'smenif neso od pycharm da vidime dali ce funkcionira ;)'
+    print ':)'
 
 
     
