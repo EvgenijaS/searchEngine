@@ -100,3 +100,4 @@ p,v = crawl(url,1000)
 
 for e in p:
     print e
+print 'ok e uploadot'
