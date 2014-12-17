@@ -26,6 +26,40 @@ def adjacency_matrix(links):
 
 #------------------------------------------------------------------------------
 
+def weighted_adjacency_matrix(links, occurrences):
+    """
+       Builds weighted adjacency matrix form a dictionary that maps URL to list
+       of URL's it links to. Also returns dictionary that maps ID to URL.
+       Occurrences is a list of tuples of documents and number of occurrences
+       for the searched word. Links pointing to documents in this list have
+       larger weight
+    """
+    id_to_url = {}
+    url_to_id = {}
+    i = 0
+    for url in links.keys():
+        id_to_url[i] = url
+        url_to_id[url] = i
+        i += 1
+
+    A = np.zeros(shape = (len(links),len(links)))
+    for url in links.keys():
+        for link in links[url]:
+            A[url_to_id[url], url_to_id[link]] = 1
+
+    # add the weigths
+    nodes = A.shape[0]
+    for pair in occurrences:
+        idx = url_to_id[pair[0]]
+        for i in xrange(nodes):
+            if A[i, idx] == 1:
+                A[i, idx] = 2 ** pair[1]  # weighted exponentialy according
+                                          # to the number of occurences of the
+                                          # word
+    return id_to_url, A
+
+#------------------------------------------------------------------------------
+
 def transition_matrix(A, df):
     """
         Builds the transition probability matrix for pagerank with restarts,
@@ -55,7 +89,6 @@ def power_method(Q):
 
     old_p = np.zeros(p.shape)
     while np.sum(np.absolute(old_p - p)) > 10e-5:
-        print np.sum(np.absolute(old_p - p))
         old_p = np.copy(p)
         p = np.dot(Q, p)
 
@@ -64,6 +97,7 @@ def power_method(Q):
 #------------------------------------------------------------------------------
 
 ########################## TEST ##############################
+"""
 def main ():
     d = {"verce": ["andrej", "bile", "magi", "vesna"],
          "andrej": ["verce", "buba", "vesna", "tac"],
@@ -84,3 +118,4 @@ def main ():
 
 
 main()
+"""
