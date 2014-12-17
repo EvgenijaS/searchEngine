@@ -1,4 +1,5 @@
 import pagerank
+import numpy as np
 
 
 def find (word, word_doc):
@@ -15,7 +16,32 @@ def find (word, word_doc):
 
     return occurrences
 
+#------------------------------------------------------------------------------
 
+def find_relevant (occurences, p, urlmap):
+    """
+        Find relevant documents as function of occurrences and pagerank. Urlmap
+        is a dictionary that maps from url to id
+    """
+    nodes = len(p)
+    rank = np.divide(p, (1.0/nodes))          # ratio between the rank of the node and all-equal rank
+    for pair in occurences:                   # add to the current rank the number of occurrences of the word
+        idx = urlmap[pair[0]]
+        rank[idx,0] += pair[1]
+
+    return rank
+
+#------------------------------------------------------------------------------
+
+def sort_rankings (ranking, idmap):
+    """
+       Sort rankings and map them to url
+    """
+    result = [(idmap[i], ranking[i,0]) for i in xrange(0, ranking.shape[0])]
+    result = sorted(result, key = lambda x: x[1], reverse = True)       # sort by ranks
+    return result
+
+#------------------------------------------------------------------------------
 
 def main ():
     wd = {"kniga": [("andrej",0),("verce", 2),("bile", 1),("riste", 3),("magi", 0)],
@@ -32,20 +58,25 @@ def main ():
          "tac": ["riste", "verce", "vesna"],
          "riste" : ["andrej", "bile"]}
 
-    occurrences = find("parfem", wd)
-    # idmap, A = pagerank.adjacency_matrix(d)
-    idmap, A = pagerank.weighted_adjacency_matrix(d, occurrences)
-    print A
-    print
-    print
+    occurrences = find("kniga", wd)
 
+    # one way
+    (idmap, urlmap, A) = pagerank.weighted_adjacency_matrix(d, occurrences)
     Q = pagerank.transition_matrix(A, 0.2);
     p = pagerank.power_method(Q)
 
-    print idmap
-    print
-    print p
+    print sort_rankings(p, idmap)
 
+    print
+    print
+
+    # another way
+    idmap, urlmap, A = pagerank.adjacency_matrix(d)
+    Q = pagerank.transition_matrix(A, 0.2);
+    p = pagerank.power_method(Q)
+    r = find_relevant(occurrences, p, urlmap)
+
+    print sort_rankings(r, idmap)
 #------------------------------------------------------------------------------
 
 main()
