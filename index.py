@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf_8_sig -*-
+# -*- coding: utf_8 -*-
 import os
 
 def build_word_index (path):

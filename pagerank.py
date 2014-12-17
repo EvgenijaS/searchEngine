@@ -22,7 +22,7 @@ def adjacency_matrix(links):
         for link in links[url]:
             A[url_to_id[url], url_to_id[link]] = 1
 
-    return id_to_url, A
+    return id_to_url, url_to_id, A
 
 #------------------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ def weighted_adjacency_matrix(links, occurrences):
                 A[i, idx] = 2 ** pair[1]  # weighted exponentialy according
                                           # to the number of occurences of the
                                           # word
-    return id_to_url, A
+    return id_to_url, url_to_id, A
 
 #------------------------------------------------------------------------------
 
