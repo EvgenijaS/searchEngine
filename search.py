@@ -44,10 +44,10 @@ def sort_rankings (ranking, idmap):
 #------------------------------------------------------------------------------
 
 def main ():
-    wd = {"kniga": [("andrej",0),("verce", 2),("bile", 1),("riste", 3),("magi", 0)],
-          "kafe": [("andrej",1),("verce", 3),("bile", 0),("riste", 0),("magi", 2)],
-          "parfem": [("andrej",4),("verce", 0),("bile", 2),("riste", 0),("magi", 1)],
-          "cokolado": [("andrej",0),("verce", 2),("bile", 0),("riste", 1),("magi", 0)]}
+    wd = {"kniga": [["andrej",0],["verce", 2],["bile", 1],["riste", 3],["magi", 0]],
+          "kafe": [["andrej",1],["verce", 3],["bile", 0],["riste", 0],["magi", 2]],
+          "parfem": [["andrej",4],["verce", 0],["bile", 2],["riste", 0],["magi", 1]],
+          "cokolado": [["andrej",0],["verce", 2],["bile", 0],["riste", 1],["magi", 0]]}
 
     d = {"verce": ["andrej", "bile", "magi", "vesna"],
          "andrej": ["verce", "buba", "vesna", "tac"],
@@ -58,7 +58,7 @@ def main ():
          "tac": ["riste", "verce", "vesna"],
          "riste" : ["andrej", "bile"]}
 
-    occurrences = find("kniga", wd)
+    occurrences = find("cokolado", wd)
 
     # one way
     (idmap, urlmap, A) = pagerank.weighted_adjacency_matrix(d, occurrences)

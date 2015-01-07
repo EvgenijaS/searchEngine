@@ -96,26 +96,3 @@ def power_method(Q):
 
 #------------------------------------------------------------------------------
 
-########################## TEST ##############################
-"""
-def main ():
-    d = {"verce": ["andrej", "bile", "magi", "vesna"],
-         "andrej": ["verce", "buba", "vesna", "tac"],
-         "bile": ["riste", "tac", "magi"],
-         "magi": ["vesna", "verce", "andrej"],
-         "vesna": ["buba"],
-         "buba": ["bile", "magi", "tac"],
-         "tac": ["riste", "verce", "vesna"],
-         "riste" : ["andrej", "bile"]}
-
-    idmap, A = adjacency_matrix(d)
-    Q = transition_matrix(A, 0.2);
-    p = power_method(Q)
-
-    print idmap
-    print
-    print p
-
-
-main()
-"""
