@@ -38,29 +38,6 @@ class Node:
         word = word[::-1]
         return word
 
-    """
-    def stem_search (self, word):
-        # parameters to fit
-        GRANKI = 2
-        DO_TUKA = 3
-
-        # if root
-        if self.letter == '#':
-            return self.children[word[0]].stem_search(word)
-        # otherwise
-        else:
-            #prev_count = len(self.parent.children)
-            #next_count = 0
-            #if len(word) > 1:
-            #    next_count = len(self.children[word[1]].children)
-            self_count = len(self.children)
-
-            if (len(word) == 1) or (self_count >= GRANKI and self.count <= DO_TUKA): #(next_count == 0) or (self_count > prev_count and self_count > next_count):
-                return self.get_word()
-            else:
-                return self.children[word[1]].stem_search(word[1:])
-    """
-
 
     def stem_search (self, word, idx = 0):
         # if root
@@ -140,7 +117,7 @@ def main ():
             if len(stem) < 3:
                 redo_words.append(word)
             else:
-                stems.append((word, stem))
+                stems.append((stem, word))
                 #redo_words.append(stem)
 
 
@@ -148,13 +125,22 @@ def main ():
     for word in redo_words:
         if len(word) > 3:
             stem = trie.find_stem(word)
-            stems.append((word, stem))
+            stems.append((stem, word))
 
 
     for s in stems:
-        print 'WORD: ' + s[0]
-        print 'STEM: ' + s[1]
+        print 'WORD: ' + s[1]
+        print 'STEM: ' + s[0]
         print
+
+
+    fw = open("../../data/stems.txt", "w")
+    fw.write(str(sorted([i[0] for i in stems])))
+    fw.close()
+
+    fw = open("../../data/stems-word-pairs.txt", "w")
+    fw.write(str(sorted(stems)))
+    fw.close()
 
 ###############################################################################
 
