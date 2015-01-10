@@ -1,4 +1,4 @@
-# -*- coding: utf_8 -*-
+# -*- coding: utf-8 -*-
 
 class Node:
 
@@ -62,18 +62,23 @@ class Node:
     """
 
 
-    def stem_search (self, word, prev_sv):
+    def stem_search (self, word, idx = 0):
         # if root
         if self.letter == '#':
-            return self.children[word[0]].stem_search(word, len(self.children))
+            return self.children[word[0]].stem_search(word, idx)
         # otherwise
         else:
-            sv = len(self.children)    # current successor variety
+            if (len(word) == idx+1):
+                return self.get_word()
 
-            if (len(word) == 1) or (sv > prev_sv and self.parent != None and self.parent.parent != None):  # suddent growth of sv and atleast third letter in word
+            prev_sv = len(self.parent.children)
+            sv = len(self.children)    # current successor variety
+            next_sv = len(self.children[word[idx+1]].children)
+
+            if sv > prev_sv and sv >= next_sv and idx > 1:  # suddent growth of sv and atleast third letter in word
                   return self.get_word()
             else:
-                return self.children[word[1]].stem_search(word[1:], sv)
+                return self.children[word[idx+1]].stem_search(word, idx+1)
 
 
     def __str__ (self):
@@ -110,19 +115,48 @@ import re
 
 def main ():
     trie = Trie()
+    trie_reversed = Trie()
 
-    text = 'Stemming removes word suffixes, perhaps recursively in layer after layer of processing. The process has two goals. In terms of efficiency, stemming reduces the number of unique words in the index, which in turn reduces the storage space required for the index and speeds up the search process. In terms of effectiveness, stemming improves recall by reducing all forms of the word to a base or stemmed form. For example, if a user asks for analyze, they may also want documents which contain analysis, analyzing, analyzer, analyzes, and analyzed. Therefore, the document processor stems document terms to analy- so that documents which include various forms of analy- will have equal likelihood of being retrieved; this would not occur if the engine only indexed variant forms separately and required the user to enter all. Of course, stemming does have a downside. It may negatively affect precision in that all forms of a stem will match, when, in fact, a successful query for the user would have come from matching only the word form actually used in the query. Milosevic\'s comments, carried by the official news agency Tanjug, cast doubt over the governments at the talks, which the international community has called to try to prevent an all-out war in the Serbian province. "President Milosevic said it was well known that Serbia and Yugoslavia were firmly committed to resolving problems in Kosovo, which is an integral part of Serbia, peacefully in Serbia with the participation of the representatives of all ethnic communities," Tanjug said. Milosevic was speaking during a meeting with British Foreign Secretary Robin Cook, who delivered an ultimatum to attend negotiations in a week\'s time on an autonomy proposal for Kosovo with ethnic Albanian leaders from the province. Cook earlier told a conference that Milosevic had agreed to study the proposal. While essential and potentially important in affecting the outcome of a search, these first three steps simply standardize the multiple formats encountered when deriving documents from various providers or handling various Web sites. The steps serve to merge all the data into a single consistent data structure that all the downstream processes can handle. The need for a well-formed, consistent format is of relative importance in direct proportion to the sophistication of later steps of document processing. Step two is important because the pointers stored in the inverted file will enable a system to retrieve various sized units — either site, page, document, section, paragraph, or sentence.'
-    words = set(re.split("[^a-z]", text.lower()))
+    f = open('../../data/words.txt', 'r')
+    text = u"" + f.read().decode('utf-8')
+    f.close()
+
+    #words = set(re.findall(ur"(?u)\w+", text.lower()))
+    words = eval(text)
+
     for word in words:
         trie.add_word(word)
-    #print trie
-    print 'OK'
 
     for word in words:
-        if len(word) > 0:
-            print 'WORD: ' +  word
-            print 'STEM: ' + trie.find_stem(word)
-            print
+        trie_reversed.add_word(word[::-1])
+
+
+    # remove sufixes
+    stems = []
+    redo_words = []
+    for word in words:
+        if len(word) > 3:
+            stem = word[::-1].replace(trie_reversed.find_stem(word[::-1]), '', 1)[::-1]  # ja naogjame nastavkata namesto zborot i ja trgame
+            if len(stem) < 3:
+                redo_words.append(word)
+            else:
+                stems.append((word, stem))
+                #redo_words.append(stem)
+
+
+    # find word root
+    for word in redo_words:
+        if len(word) > 3:
+            stem = trie.find_stem(word)
+            stems.append((word, stem))
+
+
+    for s in stems:
+        print 'WORD: ' + s[0]
+        print 'STEM: ' + s[1]
+        print
+
+###############################################################################
 
 if __name__ == '__main__':
     main()
