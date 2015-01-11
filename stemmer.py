@@ -4,13 +4,14 @@ class Node:
 
     def __init__(self, letter = '#', parent = None):
         self.children = {}
-        self.count = 0          # number of word that begin with
+        self.count = 0          # number of words that contain the prefix
         self.letter = letter
         self.parent = parent
         self.full_word = False  # completes a word
 
 
     def add (self, word):
+        """ Add word """
         self.count += 1
         # if root
         if self.letter == '#':
@@ -28,8 +29,7 @@ class Node:
 
 
     def get_word (self):
-        if self.letter == '#':
-            return ''
+        """ Get the word (prefix) that ends at the current node"""
         word = ''
         node = self
         while node.letter != '#':
@@ -39,23 +39,24 @@ class Node:
         return word
 
 
-    def stem_search (self, word, idx = 0):
+    def peak_and_plateau (self, word, idx = 0):
+        """ Peak-and-plateau stemming implementation """
         # if root
         if self.letter == '#':
-            return self.children[word[0]].stem_search(word, idx)
+            return self.children[word[0]].peak_and_plateau(word, idx)
         # otherwise
         else:
-            if (len(word) == idx+1):
+            if (len(word) == idx+1):                           # if at the end of a word
                 return self.get_word()
 
-            prev_sv = len(self.parent.children)
-            sv = len(self.children)    # current successor variety
-            next_sv = len(self.children[word[idx+1]].children)
+            prev_sv = len(self.parent.children)                # successor variety of the parent
+            sv = len(self.children)                            # successor variety of the current node
+            next_sv = len(self.children[word[idx+1]].children) # successor variety of the child-node that follows
 
-            if sv > prev_sv and sv >= next_sv and idx > 1:  # suddent growth of sv and atleast third letter in word
+            if sv > prev_sv and sv >= next_sv and idx > 1:     # sudden growth of sv and at least third letter in word
                   return self.get_word()
-            else:
-                return self.children[word[idx+1]].stem_search(word, idx+1)
+            else:                                              # otherwise continue with the next letter
+                return self.children[word[idx+1]].peak_and_plateau(word, idx+1)
 
 
     def __str__ (self):
@@ -77,16 +78,19 @@ class Trie:
         self.root = Node()
 
     def add_word (self, word):
+        """ Add word to the trie """
         if len(word) > 0:
             self.root.add(word)
 
     def find_stem(self, word):
-        return self.root.stem_search(word, 0)
+        """ Find stem of a word, after the trie is built"""
+        return self.root.peak_and_plateau(word, 0)
 
     def __str__ (self):
         return self.root.__str__()
 
 
+###############################################################################
 #------------------TEST--------------------------------------------------------
 import re
 
@@ -107,13 +111,14 @@ def main ():
     for word in words:
         trie_reversed.add_word(word[::-1])
 
+    print "The Trie is built"
 
     # remove sufixes
     stems = []
     redo_words = []
     for word in words:
         if len(word) > 3:
-            stem = word[::-1].replace(trie_reversed.find_stem(word[::-1]), '', 1)[::-1]  # ja naogjame nastavkata namesto zborot i ja trgame
+            stem = word[::-1].replace(trie_reversed.find_stem(word[::-1]), '', 1)[::-1]
             if len(stem) < 3:
                 redo_words.append(word)
             else:
@@ -142,7 +147,6 @@ def main ():
     fw.write(str(sorted(stems)))
     fw.close()
 
-###############################################################################
 
 if __name__ == '__main__':
     main()
