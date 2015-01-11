@@ -6,6 +6,7 @@ def term_freq (document):
     """
     Calculates term frequency of every word in a document
     document - list of words
+    returns dictionary: term - term frequency
     """
     tf = {}
     for word in document:
@@ -20,7 +21,6 @@ def term_freq (document):
         tf[key] = tf[key] / float(words_count)
 
     return tf
-
 
 #------------------------------------------------------------------------------
 
@@ -44,7 +44,6 @@ def inverse_doc_freq (documents):
 
     return idf
 
-
 #------------------------------------------------------------------------------
 
 def tf_idf (docs_tf, idf):
@@ -62,7 +61,8 @@ def tf_idf (docs_tf, idf):
     return tfidf
 
 
-#------------------------------------------------------------------------------
+###############################################################################
+#-----------------TEST----------------------------------------------------------
 
 def main ():
     doc1 = "Tf-idf stands for term frequency-inverse document frequency, and the tf-idf weight is a weight often used in information retrieval and text mining. This weight is a statistical measure used to evaluate how important a word is to a document in a collection or corpus. The importance increases proportionally to the number of times a word appears in the document but is offset by the frequency of the word in the corpus."
@@ -94,6 +94,6 @@ def main ():
         print
 
 
-#------------------------------------------------------------------------------
+if __name__ == '__main__':
+    main()
 
-main()

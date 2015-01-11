@@ -2,9 +2,6 @@ import numpy as np
 import operator
 import json
 
-"""
-4-funkcija koja go sortira pagerankot
-"""
 
 def adjacency_matrix(links):
     """
@@ -76,6 +73,7 @@ def pagerank(graph, damping_factor):
     rank = dict(zip(urls, p))
 
     return rank
+
 
 ###############################################################################
 #---------------------------TEST------------------------------------------------
