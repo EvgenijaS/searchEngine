@@ -3,6 +3,7 @@ import numpy as np
 import re
 import tfidf
 import operator
+import math
 
 
 def get_match(word):
@@ -38,6 +39,8 @@ def search(query):
     """
     tokens = set(re.findall(ur"(?u)\w+", query.lower().decode('utf-8')))     # split on non-alpha character
 
+    #TODO remove stop words
+
     # get relevant documents
     urls = []
     query_stems = []
@@ -51,19 +54,18 @@ def search(query):
         query_stems.append(term)
 
     # get document vectors (tf-idfrepresentation)
-    documents_tf_idf = [get_document(url) for url in urls]
+    documents_tf_idf = [get_document(url) for url in urls]        # list of dictionaries
 
     # get pageranks
     pageranks = [get_pagerank('url') for url in urls]
 
     # query to tf-idf vector
-    query_tf_idf = np.zeros(shape = documents_tf_idf.shape)
-    stems_tf = tfidf.tf()              # tf of the stems
+    stems_tfidf = tfidf.term_freq(query_stems)                    # tf of the stems (dictionary)
     for stem in query_stems:
-        query_tf_idf[get_word_index(stem)] = stems_tf.get(stem, 0) * get_word_idf(stem)
+        stems_tfidf[stem] *= get_word_idf(stem)
 
     # calculate the score for each document
-    score = [(1 - c)*cosine_similarity(query_tf_idf, doc) for doc in documents_tf_idf]
+    score = [(1 - c)*cosine_similarity(stems_tfidf, documents_tf_idf[doc]) for doc in documents_tf_idf]
     score = score + c * pageranks
 
     # sort documents by score
@@ -73,11 +75,27 @@ def search(query):
 
 #-------------------------------------------------------------------------------
 
-def cosine_similarity(v1, v2):
-    v1_norm = np.linalg.norm(v1)
-    v2_norm = np.linalg.norm(v2)
-    dot_product = np.dot(v1, v2)
-    return float(dot_product) / (v1_norm*v2_norm)
+def cosine_similarity(query, doc):
+    """ Both query and doc are dictionaries stem - tfidf """
+    cos = 0
+    for stem in query:
+        if stem in doc:
+            cos += (query[stem] * doc[stem])
+
+    m1 = vector_magnitude(query)
+    m2 = vector_magnitude(doc)
+
+    cos /= float(m1*m2)
+    return cos
+
+
+def vector_magnitude(v):
+    """ v is considered to be dictionary stem-tfidf"""
+    m = 0
+    for stem in v:
+        m += v[stem]**2
+    return math.sqrt(m)
+
 
 
 ###############################################################################
