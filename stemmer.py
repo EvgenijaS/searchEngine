@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import stemmer2 as st2
 
 class Node:
 
@@ -98,12 +99,15 @@ def main ():
     trie = Trie()
     trie_reversed = Trie()
 
-    f = open('../../data/words.txt', 'r')
+    f = open('../../data/text_for_stemming.txt', 'r')
     text = u"" + f.read().decode('utf-8')
     f.close()
 
-    #words = set(re.findall(ur"(?u)\w+", text.lower()))
-    words = eval(text)
+    words = set(re.findall(ur"(?u)\w+", text.lower()))
+    #words = eval(text)
+
+    # read the dictionary of Aleksandar Petrovski
+    stem_dict = st2.build_stems_dictionary('../../data/stems_dictionary.tbl')
 
     for word in words:
         trie.add_word(word)
@@ -117,13 +121,18 @@ def main ():
     stems = []
     redo_words = []
     for word in words:
-        if len(word) > 3:
-            stem = word[::-1].replace(trie_reversed.find_stem(word[::-1]), '', 1)[::-1]
-            if len(stem) < 3:
-                redo_words.append(word)
-            else:
-                stems.append((stem, word))
-                #redo_words.append(stem)
+        stem = stem_dict.get(word, None)
+        if stem is None:
+            if len(word) > 3:
+                stem = word[::-1].replace(trie_reversed.find_stem(word[::-1]), '', 1)[::-1]
+                if len(stem) < 3:
+                    redo_words.append(word)
+                else:
+                    stems.append((stem, word))
+                    #redo_words.append(stem)
+        else:
+            stems.append((stem, word))
+
 
 
     # find word root
